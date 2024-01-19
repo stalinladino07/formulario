@@ -1,0 +1,164 @@
+/*==============================================================*/
+/* Table: BILLS                                                 */
+/*==============================================================*/
+create table BILLS (
+   IDBILLS              SERIAL               not null,
+   CEDULA               VARCHAR(100)                 null,
+   SUBTOTAL             DECIMAL              null,
+   IVA                  DECIMAL              null,
+   TOTAL                DECIMAL              null,
+   constraint PK_BILLS primary key (IDBILLS)
+);
+
+/*==============================================================*/
+/* Index: BILLS_PK                                              */
+/*==============================================================*/
+create unique index BILLS_PK on BILLS (
+IDBILLS
+);
+
+/*==============================================================*/
+/* Index: USER_BILL_FK                                          */
+/*==============================================================*/
+create  index USER_BILL_FK on BILLS (
+CEDULA
+);
+
+/*==============================================================*/
+/* Table: BILLS_PRODUCTS                                        */
+/*==============================================================*/
+create table BILLS_PRODUCTS (
+   IDBILLPRODUCT        SERIAL               not null,
+   IDPRODUCT            INT4                 null,
+   IDBILLS              INT4                 null,
+   constraint PK_BILLS_PRODUCTS primary key (IDBILLPRODUCT)
+);
+
+/*==============================================================*/
+/* Index: BILLS_PRODUCTS_PK                                     */
+/*==============================================================*/
+create unique index BILLS_PRODUCTS_PK on BILLS_PRODUCTS (
+IDBILLPRODUCT
+);
+
+/*==============================================================*/
+/* Index: PRODUCT_BILL_FK                                       */
+/*==============================================================*/
+create  index PRODUCT_BILL_FK on BILLS_PRODUCTS (
+IDPRODUCT
+);
+
+/*==============================================================*/
+/* Index: BILL_PRODUCT_FK                                       */
+/*==============================================================*/
+create  index BILL_PRODUCT_FK on BILLS_PRODUCTS (
+IDBILLS
+);
+
+/*==============================================================*/
+/* Table: PRODUCTS                                              */
+/*==============================================================*/
+create table PRODUCTS (
+   IDPRODUCT            SERIAL               not null,
+   NAME                 VARCHAR(100)         null,
+   PRICE                DECIMAL              null,
+   constraint PK_PRODUCTS primary key (IDPRODUCT)
+);
+
+/*==============================================================*/
+/* Index: PRODUCTS_PK                                           */
+/*==============================================================*/
+create unique index PRODUCTS_PK on PRODUCTS (
+IDPRODUCT
+);
+
+/*==============================================================*/
+/* Table: PROVIDER                                              */
+/*==============================================================*/
+create table PROVIDER (
+   IDPROVIDER           SERIAL               not null,
+   NAME                 VARCHAR(100)         null,
+   constraint PK_PROVIDER primary key (IDPROVIDER)
+);
+
+/*==============================================================*/
+/* Index: PROVIDER_PK                                           */
+/*==============================================================*/
+create unique index PROVIDER_PK on PROVIDER (
+IDPROVIDER
+);
+
+/*==============================================================*/
+/* Table: PROVIDER_PRODUCT                                      */
+/*==============================================================*/
+create table PROVIDER_PRODUCT (
+   IDPRODUCTPROVIDER    SERIAL               not null,
+   IDPROVIDER           INT4                 null,
+   IDPRODUCT            INT4                 null,
+   constraint PK_PROVIDER_PRODUCT primary key (IDPRODUCTPROVIDER)
+);
+
+/*==============================================================*/
+/* Index: PROVIDER_PRODUCT_PK                                   */
+/*==============================================================*/
+create unique index PROVIDER_PRODUCT_PK on PROVIDER_PRODUCT (
+IDPRODUCTPROVIDER
+);
+
+/*==============================================================*/
+/* Index: PROVIDER_PRODUCT_FK                                   */
+/*==============================================================*/
+create  index PROVIDER_PRODUCT_FK on PROVIDER_PRODUCT (
+IDPROVIDER
+);
+
+/*==============================================================*/
+/* Index: PRODUCT_PROVIDER_FK                                   */
+/*==============================================================*/
+create  index PRODUCT_PROVIDER_FK on PROVIDER_PRODUCT (
+IDPRODUCT
+);
+
+/*==============================================================*/
+/* Table: USERS                                                 */
+/*==============================================================*/
+create table USERS (
+   CEDULA               VARCHAR(100)         not null,
+   NAME                 VARCHAR(100)         not null,
+   EMAIL                CHAR(50)             not null,
+   PASSWORD             VARCHAR(50)          not null,
+   ADDRESS              VARCHAR(500)         null,
+   constraint PK_USERS primary key (CEDULA)
+);
+
+/*==============================================================*/
+/* Index: USER_PK                                               */
+/*==============================================================*/
+create unique index USER_PK on USERS (
+CEDULA
+);
+
+alter table BILLS
+   add constraint FK_BILLS_USER_BILL_USERS foreign key (CEDULA)
+      references USERS (CEDULA)
+      on delete restrict on update restrict;
+
+alter table BILLS_PRODUCTS
+   add constraint FK_BILLS_PR_BILL_PROD_BILLS foreign key (IDBILLS)
+      references BILLS (IDBILLS)
+      on delete restrict on update restrict;
+
+alter table BILLS_PRODUCTS
+   add constraint FK_BILLS_PR_PRODUCT_B_PRODUCTS foreign key (IDPRODUCT)
+      references PRODUCTS (IDPRODUCT)
+      on delete restrict on update restrict;
+
+alter table PROVIDER_PRODUCT
+   add constraint FK_PROVIDER_PRODUCT_P_PRODUCTS foreign key (IDPRODUCT)
+      references PRODUCTS (IDPRODUCT)
+      on delete restrict on update restrict;
+
+alter table PROVIDER_PRODUCT
+   add constraint FK_PROVIDER_PROVIDER__PROVIDER foreign key (IDPROVIDER)
+      references PROVIDER (IDPROVIDER)
+      on delete restrict on update restrict;

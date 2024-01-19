@@ -1,0 +1,85 @@
+<div class="card">
+    <p-messages [(value)]="msgs"></p-messages>
+
+    <p-table [columns]="cols" [value]="listStock"  [paginator]="true" [rows]="15">
+    <ng-template pTemplate="caption">
+        Lista de Stock
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                {{col.header}}
+                <p-sortIcon [field]="col.field"></p-sortIcon>
+            </th>
+            <th style="width: 100px;"></th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr [pSelectableRow]="rowData">
+            <td *ngFor="let col of columns">
+                {{rowData[col.field]}}
+            </td>
+            <td>
+                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="onRowSelect(rowData)"></button>
+                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="delete(rowData)"></button>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="summary" let-rowData>
+        <div style="text-align:left">
+            <button type="button" pButton icon="pi pi-plus" (click)="showDialogToAdd()" label="Add"></button>
+        </div>
+    </ng-template>
+</p-table>
+</div>
+
+
+<p-dialog header="Datos de Factura" [(visible)]="displayDialog" [focusOnShow]="false" 
+            [responsive]="true" showEffect="fade" [modal]="true" [style]="{width: '500px'}">
+    <div class="p-grid ui-fluid" *ngIf="stock">
+        <div class="p-col-4">
+            <label for="vin">Usuario: </label>
+        </div>
+        <div class="p-col-8">
+            <p-dropdown id="users" [options]="listUsers" [(ngModel)]="selectUsers" placeholder="Seleccione" ></p-dropdown>
+        </div>
+        <div class="p-col-4">
+            <label for="vin">Productos: </label>
+        </div>
+        <div class="p-col-8">
+            <p-multiSelect id="prduct" [options]="listProducts" [(ngModel)]="selectProduct" (onChange)="onChangeMulti()" placeholder="Seleccione"></p-multiSelect>
+        </div>
+        <div class="p-col-4">
+            <label for="vin">Proveedores: </label>
+        </div>
+        <div class="p-col-8">
+            <p-dropdown id="provider" [options]="listProviders" [(ngModel)]="selectProviders" placeholder="Seleccione" ></p-dropdown>
+        </div>
+        <div class="p-col-4">
+            <label for="Subtotal">Subtotal: </label>
+        </div>
+        <div class="p-col-8">
+            <input pInputText id="Subtotal" [(ngModel)]="stock.subtotal" disabled/>
+        </div>
+        <div class="p-col-4">
+            <label for="IVA">IVA: </label>
+        </div>
+        <div class="p-col-8">
+            <input pInputText id="IVA" [(ngModel)]="stock.iva" disabled/>
+            <label>%</label>
+        </div>
+        <div  class="p-col-4">
+            <label for="Total">Total: </label>
+        </div>
+        <div class="p-col-8">
+            <input pInputText id="Total" [(ngModel)]="stock.total" disabled/>
+        </div>
+    </div>
+    <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+            
+            <button type="button" pButton icon="pi pi-check" (click)="save()" label="Save"></button>
+            <button type="button" pButton icon="pi p-button-warning" (click)="generateReport()" label="Export"></button>
+        </div>
+    </p-footer>
+</p-dialog>
